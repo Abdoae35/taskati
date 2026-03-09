@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:taskati/core/constants/app_assets.dart';
+import 'package:taskati/core/styles/app_colors.dart';
 import 'package:taskati/core/styles/themes.dart';
 import 'package:taskati/features/splash/splash_screen.dart';
 
@@ -20,7 +22,23 @@ class MainApp extends StatelessWidget {
         return SafeArea(
           top: false,
           bottom: Platform.isAndroid,
-          child: child ?? SizedBox.shrink(),
+          child: Stack(
+            children: [
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: AppColors.backgroundColor,
+              ),
+              Image.asset(
+                AppAssets.bg,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+              ),
+
+              child ?? SizedBox.shrink(),
+            ],
+          ),
         );
       },
       home: SplashScreen(),

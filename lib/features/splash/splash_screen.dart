@@ -3,7 +3,9 @@ import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:taskati/core/constants/app_assets.dart';
 import 'package:taskati/core/constants/app_fonts.dart';
+import 'package:taskati/core/functions/push.dart';
 import 'package:taskati/core/styles/app_colors.dart';
+import 'package:taskati/features/complete_profile/page/complete_profile.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,9 +16,16 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
+  void initState() {
+    Future.delayed(const Duration(seconds: 3), () {
+      pushReplaceMent(context, CompleteProfile());
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+    
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
