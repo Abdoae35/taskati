@@ -4,13 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskati/core/constants/app_assets.dart';
 import 'package:taskati/core/constants/app_fonts.dart';
+import 'package:taskati/core/functions/push.dart';
+import 'package:taskati/core/functions/push.dart' as SharedPref;
+import 'package:taskati/core/services/shered_pref.dart';
 import 'package:taskati/core/styles/app_colors.dart';
 import 'package:taskati/core/widgets/custom_svg_picture.dart';
 import 'package:taskati/core/widgets/custom_text_field.dart';
 import 'package:taskati/core/widgets/main_button.dart';
 import 'package:taskati/core/widgets/tab_button.dart';
+import 'package:taskati/features/home/page/home_page.dart';
+import 'package:shared_preferences_android/shared_preferences_android.dart';
 
 class CompleteProfile extends StatefulWidget {
   @override
@@ -44,7 +50,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
               ],
             ),
             Gap(25),
-    
+
             Stack(
               children: [
                 CircleAvatar(
@@ -66,9 +72,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
                                 imagePath = null;
                               });
                             },
-                            child: CustomSvgPicture(
-                              path: AppAssets.deleteSvg,
-                            ),
+                            child: CustomSvgPicture(path: AppAssets.deleteSvg),
                           ),
                         )
                       : SizedBox(),
@@ -90,14 +94,14 @@ class _CompleteProfileState extends State<CompleteProfile> {
                   height: 40,
                 ),
                 Gap(12),
-    
+
                 TabButton(
                   text: 'From Gallery',
                   onPressed: () async {
                     var image = await ImagePicker().pickImage(
                       source: ImageSource.gallery,
                     );
-    
+
                     if (image != null) {
                       setState(() {
                         imagePath = image.path;
@@ -122,21 +126,24 @@ class _CompleteProfileState extends State<CompleteProfile> {
         padding: const EdgeInsets.fromLTRB(22, 5, 22, 25),
         child: MainButton(
           text: 'Let\'s Start',
-          onPressed: () {
+          onPressed: () async {
             nameController.text;
             //image uploaded but name is not empty
-    
+
             //image not uploaded but name is not empty
             //image not uploaded and name is empty
             //image uploaded and name is not empty
-    
+
             if (imagePath != null && nameController.text.isNotEmpty) {
               //navigate to home screen
+              await SheredPref.setUserInfo(nameController.text, imagePath!);
+              await SheredPref.setBool(SheredPref.boolKey, true);
+
+              pushTo(context, HomePage());
             } else if (imagePath != null && nameController.text.isEmpty) {
               //show dialog to upload image
               ErrorMessage(context, 'Please enter your name');
-            } else if (imagePath == null &&
-                nameController.text.isNotEmpty) {
+            } else if (imagePath == null && nameController.text.isNotEmpty) {
               //show dialog to enter name
               ErrorMessage(context, 'Please upload a profile image');
             } else if (imagePath == null && nameController.text.isEmpty) {
