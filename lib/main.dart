@@ -1,16 +1,30 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:hive_ce_flutter/adapters.dart';
 import 'package:taskati/core/constants/app_assets.dart';
+import 'package:taskati/core/services/hive_helper.dart';
 import 'package:taskati/core/services/shered_pref.dart';
 import 'package:taskati/core/styles/app_colors.dart';
 import 'package:taskati/core/styles/themes.dart';
 import 'package:taskati/features/splash/splash_screen.dart';
 
+
+//initialization of hive before runApp
+//open boxes
+//if you need cache object create  a custom adapter and register it
+//if you have any adapters to register, do it before runApp
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //setupSheredPref();
   await SheredPref.init();
+  await Hive.initFlutter();
+  //first to cache using hive --Open Box--
+  // await Hive.openBox('user');
+  // await Hive.openBox('tasks');
+  await HiveHelper.init();
   runApp(const MainApp());
 }
 
