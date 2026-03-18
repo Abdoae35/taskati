@@ -3,16 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskati/core/constants/app_assets.dart';
 import 'package:taskati/core/constants/app_fonts.dart';
+import 'package:taskati/core/functions/extentions.dart';
 import 'package:taskati/core/functions/navigations.dart';
 import 'package:taskati/core/services/hive_helper.dart';
 import 'package:taskati/features/complete_profile/page/profile_screen.dart';
 
-class HomeHeader extends StatelessWidget {
+class HomeHeader extends StatefulWidget {
   const HomeHeader({super.key, required this.imagePath, required this.name});
 
   final String imagePath;
   final String name;
 
+  @override
+  State<HomeHeader> createState() => _HomeHeaderState();
+}
+
+class _HomeHeaderState extends State<HomeHeader> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -22,9 +28,9 @@ class HomeHeader extends StatelessWidget {
             pushTo(context, ProfileScreen());
           },
           child: ClipOval(
-            child: imagePath.isNotEmpty
+            child: widget.imagePath.isNotEmpty
                 ? Image.file(
-                    File(imagePath),
+                    File(widget.imagePath),
                     width: 50,
                     height: 50,
                     fit: BoxFit.cover,
@@ -53,7 +59,7 @@ class HomeHeader extends StatelessWidget {
               ),
               Gap(0),
               Text(
-                name,
+                widget.name,
                 style: TextStyle(
                   fontSize: 19,
                   fontWeight: FontWeight.w600,
@@ -68,8 +74,9 @@ class HomeHeader extends StatelessWidget {
           onPressed: () {
             bool isDark = HiveHelper.getCachedThemeMode();
             HiveHelper.cacheThemeMode(!isDark);
+            setState(() {});
           },
-          icon: Icon(Icons.dark_mode),
+          icon: Icon(context.isDark ? Icons.light_mode : Icons.dark_mode),
         ),
       ],
     );
