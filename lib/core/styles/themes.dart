@@ -5,14 +5,14 @@ import 'package:taskati/core/styles/app_colors.dart';
 import 'package:taskati/core/styles/text_styles.dart';
 
 abstract class AppThemes {
+  //=======> Light Theme
   static ThemeData get lightTheme => ThemeData(
     fontFamily: AppFonts.lexend,
     scaffoldBackgroundColor: Colors.transparent,
     colorScheme: ColorScheme.fromSeed(
       onSurface: AppColors.blackColor,
       seedColor: AppColors.primaryColor,
-      tertiaryContainer:
-          AppColors.accentColor,
+      tertiaryContainer: AppColors.accentColor,
     ),
     cardColor: AppColors.backgroundColor,
     iconTheme: IconThemeData(color: AppColors.blackColor),
@@ -60,6 +60,7 @@ abstract class AppThemes {
     ),
   );
 
+  //==============> Dark Theme
   static ThemeData get darkTheme => ThemeData(
     fontFamily: AppFonts.lexend,
     scaffoldBackgroundColor: Colors.transparent,

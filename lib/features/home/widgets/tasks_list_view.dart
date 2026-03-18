@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:hive_ce_flutter/adapters.dart';
-import 'package:taskati/core/constants/app_assets.dart';
 import 'package:taskati/core/functions/navigations.dart';
 import 'package:taskati/core/models/task_model.dart';
 import 'package:taskati/core/services/hive_helper.dart';
-import 'package:taskati/core/styles/app_colors.dart';
-import 'package:taskati/core/styles/text_styles.dart';
 import 'package:taskati/features/add_task/page/add_task_page.dart';
 import 'package:taskati/features/home/widgets/task_card.dart';
 

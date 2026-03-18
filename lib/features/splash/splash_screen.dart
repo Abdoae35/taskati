@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     bool? isUploaded = SheredPref.getBool(SheredPref.boolKey);
     Future.delayed(const Duration(seconds: 3), () {
-      if (isUploaded != true) {
+      if (isUploaded == true) {
         pushReplaceMent(context, HomePage());
       } else {
         pushReplaceMent(context, CompleteProfile());

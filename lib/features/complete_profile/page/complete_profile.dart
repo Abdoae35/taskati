@@ -1,14 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskati/core/constants/app_assets.dart';
 import 'package:taskati/core/constants/app_fonts.dart';
 import 'package:taskati/core/functions/push.dart';
-import 'package:taskati/core/functions/push.dart' as SharedPref;
 import 'package:taskati/core/services/shered_pref.dart';
 import 'package:taskati/core/styles/app_colors.dart';
 import 'package:taskati/core/widgets/custom_svg_picture.dart';
@@ -16,7 +13,6 @@ import 'package:taskati/core/widgets/custom_text_field.dart';
 import 'package:taskati/core/widgets/main_button.dart';
 import 'package:taskati/core/widgets/tab_button.dart';
 import 'package:taskati/features/home/page/home_page.dart';
-import 'package:shared_preferences_android/shared_preferences_android.dart';
 
 class CompleteProfile extends StatefulWidget {
   @override

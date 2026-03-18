@@ -34,33 +34,43 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppThemes.lightTheme,
-      builder: (context, child) {
-        return SafeArea(
-          top: false,
-          bottom: Platform.isAndroid,
-          child: Stack(
-            children: [
-              Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: AppColors.backgroundColor,
-              ),
-              Image.asset(
-                AppAssets.bg,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.cover,
-              ),
+    return ValueListenableBuilder(
+      valueListenable: HiveHelper.userBox.listenable(),
+      builder: (context, box, child) {
+        bool isDark = HiveHelper.getCachedThemeMode();
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: AppThemes.lightTheme,
+          darkTheme: AppThemes.darkTheme,
+          themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+          builder: (context, child) {
+            return SafeArea(
+              top: false,
+              bottom: Platform.isAndroid,
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: isDark
+                        ? AppColors.blackColor
+                        : AppColors.backgroundColor,
+                  ),
+                  Image.asset(
+                    AppAssets.bg,
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
 
-              child ?? SizedBox.shrink(),
-            ],
-          ),
+                  child ?? SizedBox.shrink(),
+                ],
+              ),
+            );
+          },
+          home: SplashScreen(),
         );
       },
-      home: SplashScreen(),
     );
   }
 }
