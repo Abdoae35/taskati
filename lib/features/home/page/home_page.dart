@@ -1,16 +1,10 @@
 import 'dart:io';
 
-import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:taskati/core/constants/app_assets.dart';
-import 'package:taskati/core/constants/app_fonts.dart';
 import 'package:taskati/core/functions/push.dart';
 import 'package:taskati/core/services/shered_pref.dart';
 import 'package:taskati/core/styles/app_colors.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:taskati/features/add_task/page/add_task_page.dart';
 import 'package:taskati/features/home/widgets/daily_progress.dart';
 import 'package:taskati/features/home/widgets/home_date_picker.dart';
@@ -38,6 +32,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
+  String selectedDate = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,10 +49,14 @@ class _HomePageState extends State<HomePage> {
               DailyProgress(),
               Gap(25),
 
-              HomeDatePicker(),
+              HomeDatePicker(
+                onDateChange: (date) {
+                  selectedDate = date.toString();
+                },
+              ),
               Gap(20),
 
-              TasksBuilder(),
+              TasksBuilder(selectedDate: selectedDate),
             ],
           ),
         ),

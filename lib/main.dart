@@ -9,7 +9,7 @@ import 'package:taskati/core/services/shered_pref.dart';
 import 'package:taskati/core/styles/app_colors.dart';
 import 'package:taskati/core/styles/themes.dart';
 import 'package:taskati/features/splash/splash_screen.dart';
-
+import 'package:taskati/hive/hive_adapters.dart';
 
 //initialization of hive before runApp
 //open boxes
@@ -21,6 +21,7 @@ void main() async {
   //setupSheredPref();
   await SheredPref.init();
   await Hive.initFlutter();
+  Hive.registerAdapter(TaskModelAdapter());
   //first to cache using hive --Open Box--
   // await Hive.openBox('user');
   // await Hive.openBox('tasks');

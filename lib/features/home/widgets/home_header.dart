@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:taskati/core/constants/app_assets.dart';
 import 'package:taskati/core/constants/app_fonts.dart';
+import 'package:taskati/core/functions/navigations.dart';
+import 'package:taskati/features/complete_profile/page/profile_screen.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({
-    super.key,
-    required this.imagePath,
-    required this.name,
-  });
+  const HomeHeader({super.key, required this.imagePath, required this.name});
 
   final String imagePath;
   final String name;
@@ -18,23 +16,28 @@ class HomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        ClipOval(
-          child: imagePath.isNotEmpty
-              ? Image.file(
-                  File(imagePath),
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                )
-              : Image.asset(
-                  AppAssets.user,
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                ),
+        GestureDetector(
+          onTap: () {
+            pushTo(context, ProfileScreen());
+          },
+          child: ClipOval(
+            child: imagePath.isNotEmpty
+                ? Image.file(
+                    File(imagePath),
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    AppAssets.user,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
+          ),
         ),
         Gap(15),
-    
+
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

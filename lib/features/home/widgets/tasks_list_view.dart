@@ -1,81 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:hive_ce_flutter/adapters.dart';
 import 'package:taskati/core/constants/app_assets.dart';
+import 'package:taskati/core/functions/navigations.dart';
+import 'package:taskati/core/models/task_model.dart';
+import 'package:taskati/core/services/hive_helper.dart';
 import 'package:taskati/core/styles/app_colors.dart';
 import 'package:taskati/core/styles/text_styles.dart';
+import 'package:taskati/features/add_task/page/add_task_page.dart';
+import 'package:taskati/features/home/widgets/task_card.dart';
 
 class TasksListView extends StatelessWidget {
-  const TasksListView({super.key});
+  const TasksListView({super.key, required this.tasks});
+  final List<TaskModel> tasks;
 
   @override
   Widget build(BuildContext context) {
+    if (tasks.isEmpty) {
+      return Center(child: Text('No Task Found'));
+    }
     return ListView.separated(
-      itemCount: 5,
+      itemCount: tasks.length,
       itemBuilder: (context, index) {
-        return Container(
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.backgroundColor,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primaryColor.withOpacity(0.1),
-                blurRadius: 10,
-                offset: Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        TaskModel task = tasks[index];
+        return Slidable(
+          key: UniqueKey(),
+
+          startActionPane: ActionPane(
+            motion: const ScrollMotion(),
+
+            dismissible: DismissiblePane(
+              onDismissed: () {
+                HiveHelper.tasksBox.delete(task.id);
+              },
+            ),
+
             children: [
-              Text(
-                'Market Research',
-                style: TextStyles.body.copyWith(fontWeight: FontWeight.w600),
-              ),
-              Gap(7),
-
-              Text(
-                'Grocery shopping app design Grocery shopping app design',
-                style: TextStyles.caption1.copyWith(
-                  color: AppColors.secondaryColor,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Gap(7),
-
-              Row(
-                children: [
-                  SvgPicture.asset(AppAssets.timeSvg),
-                  Gap(5),
-                  Text(
-                    '10:00 AM - 11:00 AM',
-                    style: TextStyle(color: AppColors.primary50Color),
-                  ),
-                  Spacer(),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: AppColors.accentColor,
-                    ),
-                    child: Text(
-                      'In Progress',
-                      style: TextStyles.caption1.copyWith(
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                  ),
-                ],
+              SlidableAction(
+                onPressed: (context) {
+                  HiveHelper.tasksBox.delete(task.id);
+                },
+                backgroundColor: Color(0xFFFE4A49),
+                foregroundColor: Colors.white,
+                icon: Icons.delete,
+                label: 'Delete',
               ),
             ],
           ),
+
+          endActionPane: ActionPane(
+            motion: const ScrollMotion(),
+            children: [
+              SlidableAction(
+                flex: 2,
+                onPressed: (context) {
+                  HiveHelper.cacheTask(
+                    task.id ?? '',
+                    task.copyWith(isCompleted: true),
+                  );
+                },
+                backgroundColor: const Color(0xFF7BC043),
+                foregroundColor: Colors.white,
+                icon: Icons.check,
+                label: 'Complete',
+              ),
+              SlidableAction(
+                onPressed: (context) {
+                  pushTo(context, AddTaskPage(task: task));
+                },
+                backgroundColor: Color(0xFF0392CF),
+                foregroundColor: Colors.white,
+                icon: Icons.edit,
+                label: 'Edit',
+              ),
+            ],
+          ),
+
+          child: TaskCard(task: task),
         );
       },
-      separatorBuilder: (context, index) {
-        return Gap(12);
-      },
+      separatorBuilder: (context, index) => Gap(12),
     );
   }
 }

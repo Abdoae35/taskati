@@ -1,14 +1,11 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taskati/core/constants/app_assets.dart';
 import 'package:taskati/core/constants/app_fonts.dart';
-import 'package:taskati/core/functions/push.dart';
-import 'package:taskati/core/functions/push.dart' as SharedPref;
+import 'package:taskati/core/functions/navigations.dart';
 import 'package:taskati/core/services/shered_pref.dart';
 import 'package:taskati/core/styles/app_colors.dart';
 import 'package:taskati/core/widgets/custom_svg_picture.dart';
@@ -16,26 +13,55 @@ import 'package:taskati/core/widgets/custom_text_field.dart';
 import 'package:taskati/core/widgets/main_button.dart';
 import 'package:taskati/core/widgets/tab_button.dart';
 import 'package:taskati/features/home/page/home_page.dart';
-import 'package:shared_preferences_android/shared_preferences_android.dart';
 
-class CompleteProfile extends StatefulWidget {
+class ProfileScreen extends StatefulWidget {
   @override
-  State<CompleteProfile> createState() => _CompleteProfileState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _CompleteProfileState extends State<CompleteProfile> {
-  String? imagePath;
+class _ProfileScreenState extends State<ProfileScreen> {
+  String name = '';
+  String imagePath = '';
   final nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  Future<void> getData() async {
+    name = SheredPref.getString('name') ?? '';
+    imagePath = SheredPref.getString('imagePath') ?? '';
+    nameController.text = name; // ✅ pre-fill name field
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Complete Profile')),
+      appBar: AppBar(
+        leadingWidth: 50,
+        leading: GestureDetector(
+          onTap: () => pop(context),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: SvgPicture.asset(AppAssets.backSvg, height: 10, width: 10),
+          ),
+        ),
+        title: const Text('Profile'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(22.0),
         child: Column(
           children: [
-            Gap(40),
+            const Gap(40),
             Row(
               children: [
                 Text(
@@ -49,37 +75,43 @@ class _CompleteProfileState extends State<CompleteProfile> {
                 ),
               ],
             ),
-            Gap(25),
+            const Gap(25),
 
             Stack(
               children: [
                 CircleAvatar(
                   radius: 82,
                   backgroundColor: AppColors.backgroundColor,
-                  backgroundImage: imagePath != null
-                      ? FileImage(File(imagePath!))
+                  backgroundImage:
+                      imagePath
+                          .isNotEmpty // ✅ check isNotEmpty
+                      ? FileImage(File(imagePath))
+                            as ImageProvider // ✅ cast
                       : AssetImage(AppAssets.user),
                 ),
                 Positioned(
                   bottom: 5,
                   right: 5,
-                  child: imagePath != null
+                  child:
+                      imagePath
+                          .isNotEmpty // ✅ check isNotEmpty
                       ? CircleAvatar(
                           backgroundColor: AppColors.backgroundColor,
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
-                                imagePath = null;
+                                imagePath = '';
                               });
                             },
                             child: CustomSvgPicture(path: AppAssets.deleteSvg),
                           ),
                         )
-                      : SizedBox(),
+                      : const SizedBox(),
                 ),
               ],
             ),
-            Gap(40),
+            const Gap(40),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -89,19 +121,23 @@ class _CompleteProfileState extends State<CompleteProfile> {
                     var image = await ImagePicker().pickImage(
                       source: ImageSource.camera,
                     );
+                    if (image != null) {
+                    
+                      setState(() {
+                        imagePath = image.path;
+                      });
+                    }
                   },
                   width: 150,
                   height: 40,
                 ),
-                Gap(12),
-
+                const Gap(12),
                 TabButton(
                   text: 'From Gallery',
                   onPressed: () async {
                     var image = await ImagePicker().pickImage(
                       source: ImageSource.gallery,
                     );
-
                     if (image != null) {
                       setState(() {
                         imagePath = image.path;
@@ -113,7 +149,8 @@ class _CompleteProfileState extends State<CompleteProfile> {
                 ),
               ],
             ),
-            Gap(45),
+            const Gap(45),
+
             CustomTextField(
               hint: 'Enter your Name',
               label: 'Name',
@@ -125,30 +162,19 @@ class _CompleteProfileState extends State<CompleteProfile> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(22, 5, 22, 25),
         child: MainButton(
-          text: 'Let\'s Start',
+          text: 'Save',
           onPressed: () async {
-            nameController.text;
-            //image uploaded but name is not empty
-
-            //image not uploaded but name is not empty
-            //image not uploaded and name is empty
-            //image uploaded and name is not empty
-
-            if (imagePath != null && nameController.text.isNotEmpty) {
-              //navigate to home screen
-              await SheredPref.setUserInfo(nameController.text, imagePath!);
+            if (imagePath.isNotEmpty && nameController.text.isNotEmpty) {
+              // ✅ save and navigate
+              await SheredPref.setUserInfo(nameController.text, imagePath);
               await SheredPref.setBool(SheredPref.boolKey, true);
-
               pushTo(context, HomePage());
-            } else if (imagePath != null && nameController.text.isEmpty) {
-              //show dialog to upload image
-              ErrorMessage(context, 'Please enter your name');
-            } else if (imagePath == null && nameController.text.isNotEmpty) {
-              //show dialog to enter name
-              ErrorMessage(context, 'Please upload a profile image');
-            } else if (imagePath == null && nameController.text.isEmpty) {
-              //show dialog to enter name and upload image
-              ErrorMessage(
+            } else if (imagePath.isNotEmpty && nameController.text.isEmpty) {
+              errorMessage(context, 'Please enter your name');
+            } else if (imagePath.isEmpty && nameController.text.isNotEmpty) {
+              errorMessage(context, 'Please upload a profile image');
+            } else {
+              errorMessage(
                 context,
                 'Please enter your name and upload a profile image',
               );
@@ -159,7 +185,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
     );
   }
 
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> ErrorMessage(
+  ScaffoldFeatureController<SnackBar, SnackBarClosedReason> errorMessage(
     BuildContext context,
     String error,
   ) {
@@ -167,5 +193,4 @@ class _CompleteProfileState extends State<CompleteProfile> {
       context,
     ).showSnackBar(SnackBar(backgroundColor: Colors.red, content: Text(error)));
   }
-
 }

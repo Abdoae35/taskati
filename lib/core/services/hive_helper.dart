@@ -1,52 +1,61 @@
-import 'package:hive_ce_flutter/adapters.dart';
+import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:taskati/core/models/task_model.dart';
 
 class HiveHelper {
+  // boxes
   static late Box userBox;
-  static late Box<TaskModel> taskBox;
+  static late Box<TaskModel> tasksBox;
 
-  //box names
-  static String userBoxName = 'user';
-  static String taskBoxName = 'tasks';
+  // box names
+  static const String userBoxName = 'user';
+  static const String tasksBoxName = 'tasks';
 
-  //keys
-  static String nameKey = 'name';
-  static String imageKey = 'imagePath';
+  // keys
+  static const String nameKey = 'name';
+  static const String imageKey = 'image';
+  static const String isUploadedKey = 'isUploaded';
+  static const String isDarkModeKey = 'isDarkMode';
 
-
-  //init method to open boxes
   static Future<void> init() async {
     userBox = await Hive.openBox(userBoxName);
-    taskBox = await Hive.openBox(taskBoxName);
+    tasksBox = await Hive.openBox<TaskModel>(tasksBoxName);
   }
 
-  //users box methods
-  //set data
-  static Future<void> setData(String name, String imagePath) async {
+  // user box methods
+  static Future<void> setUserInfo(String name, String image) async {
     await userBox.put(nameKey, name);
-    await userBox.put(imageKey, imagePath);
+    await userBox.put(imageKey, image);
   }
 
-  //get data
-  static dynamic getData(String key) {
-    return userBox.get(key) ?? '';
+  static dynamic cacheData(String key, dynamic value) {
+    return userBox.put(key, value);
   }
 
-  static Future<void> setBool(String key, bool value) async {
-    await userBox.put(key, value);
+  static dynamic getCachedData(String key) {
+    return userBox.get(key);
   }
 
-  static bool? getBool(String key) {
-    return userBox.get(key) ?? false;
+  // tasks box methods
+  static dynamic cacheTask(String key, TaskModel value) {
+    return tasksBox.put(key, value);
   }
 
-  //task box methods
-
-  static dynamic cacheTask(String key, TaskModel value) async {
-    await taskBox.put(key, value);
+  static TaskModel? getCachedTask(String key) {
+    return tasksBox.get(key);
   }
 
-  static TaskModel? getTask(String key) {
-    return taskBox.get(key);
+  static void deleteTask(String key) {
+    tasksBox.delete(key);
+  }
+
+  static void cacheThemeMode(bool value) {
+    userBox.put(isDarkModeKey, value);
+  }
+
+  static bool getCachedThemeMode() {
+    return userBox.get(isDarkModeKey) ?? false;
   }
 }
+
+
+// map["eg"] = "+02";
